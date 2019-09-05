@@ -7,7 +7,8 @@ import time
 def read_hosts():
     '''
     '''
-    hosts_file_path = "~/.local/sshHosts.json"
+    home_dir = os.environ['HOME']
+    hosts_file_path = os.path.join(home_dir, ".local/sshHosts.json")
     if not os.path.isfile(hosts_file_path):
         fhosts = open(hosts_file_path, mode="a+")
         hosts_data = dict()
@@ -22,7 +23,8 @@ def read_hosts():
 def save_hosts(hosts_data):
     '''
     '''
-    hosts_file_path = "~/.local/sshHosts.json"
+    home_dir = os.environ['HOME']
+    hosts_file_path = os.path.join(home_dir, ".local/sshHosts.json")
     fhosts = open(hosts_file_path, mode="w")
     json.dump(hosts_data, fhosts)
     fhosts.close()
@@ -48,13 +50,6 @@ def list_hosts(indent=2):
             print("{0}Remote dir: {1}".format(indentation,hosts_data[host_name]["RemotePath"]))
             print("{0}Mount point: {1}".format(indentation,hosts_data[host_name]["MountPoint"]))
             print()
-        
-def mount_point_conflict(mount_point, hosts_data):
-    '''
-    '''
-    for host_name, host_data in hosts_data.items():
-        if mount_point == host_data["MountPoint"]: return True
-    return False
 
 def add_host():
     '''
@@ -71,26 +66,17 @@ def add_host():
     host_address = input()
     print("User: ", end="")
     user = input()
-    print("Password: ", end="")
-    password = input()
     print("Remote path: ", end="")
     remote_path = input()
     print("Mount point: ", end="")
     mount_point = input()
-#    if mount_point_conflict(mount_point, hosts_data):
-#        print("Mount point conflict! Nothing added!")
-#        return
-    print(password)
     hosts_data[host_name] = {
         "HostAddress": host_address,
         "User": user,
         "RemotePath": remote_path,
         "MountPoint": mount_point
     }
-    if password:
-        hosts_data[host_name]["Password"] = password
     save_hosts(hosts_data)
-    
     print("Host successfully added!")
     list_hosts()
     
@@ -130,11 +116,6 @@ def edit_host(host_name = None):
     new_user = input()
     if new_user:
         hosts_data[host_name]["User"] = new_user
-        
-    print("Password: ****. Leave blank to not alter: ", end="")
-    new_password = input()
-    if new_password:
-        hosts_data[host_name]["User"] = new_password
         
     print("Remote path: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["RemotePath"]), end="")
     new_remote_path = input()
@@ -178,6 +159,8 @@ def mount_host(host_name = None):
         time.sleep(0.5)
 
     if not mount_success:
+        cmmd = "rm -r " + hosts_data[host_name]["MountPoint"]
+        os.system(cmmd)
         print("Failed to mount", host_name)
     else:
         print("{0} successfully mounted!".format(host_name))
@@ -203,11 +186,14 @@ def umount_host(host_name = None):
     while not umount_success and tries < 5:
         umount_success = not bool(os.system(cmmd))
         tries +=  1
+        time.sleep(0.5)
 
     if umount_success:
         cmmd = "rm -rf " + hosts_data[host_name]["MountPoint"]
         os.system(cmmd)
         print("{0} successfully unmounted!".format(host_name))
+    else:
+        print("failed to unmount {0}!".format(host_name))
     
 if __name__ == "__main__":
     actions = {
