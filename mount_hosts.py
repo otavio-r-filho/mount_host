@@ -40,15 +40,15 @@ def list_hosts(indent=2):
     RESET = "\033[0;0m"
     
     if not bool(hosts_data):
-        print("There are no hosts!")
+        print(">   There are no hosts!")
     else:
         hosts_names = list(hosts_data.keys())
         for host_name in hosts_names:
-            print("{0}{1}{2}{3}".format(BOLD,RED,host_name,RESET))
-            print("{0}Address: {1}".format(indentation,hosts_data[host_name]["HostAddress"]))
-            print("{0}User: {1}".format(indentation,hosts_data[host_name]["User"]))
-            print("{0}Remote dir: {1}".format(indentation,hosts_data[host_name]["RemotePath"]))
-            print("{0}Mount point: {1}".format(indentation,hosts_data[host_name]["MountPoint"]))
+            print(">   {0}{1}{2}{3}".format(BOLD,RED,host_name,RESET))
+            print(">   {0}Address: {1}".format(indentation,hosts_data[host_name]["HostAddress"]))
+            print(">   {0}User: {1}".format(indentation,hosts_data[host_name]["User"]))
+            print(">   {0}Remote dir: {1}".format(indentation,hosts_data[host_name]["RemotePath"]))
+            print(">   {0}Mount point: {1}".format(indentation,hosts_data[host_name]["MountPoint"]))
             print()
 
 def add_host():
@@ -60,15 +60,15 @@ def add_host():
     host_name = input()
      # Checking for conflicts
     if host_name in hosts_data:
-        print("Host already in the database! Nothing added!")
+        print(">   Host already in the database! Nothing added!")
         return
-    print("Host address: ", end="")
+    print(">   Host address: ", end="")
     host_address = input()
-    print("User: ", end="")
+    print(">   User: ", end="")
     user = input()
-    print("Remote path: ", end="")
+    print(">   Remote path: ", end="")
     remote_path = input()
-    print("Mount point: ", end="")
+    print(">   Mount point: ", end="")
     mount_point = input()
     hosts_data[host_name] = {
         "HostAddress": host_address,
@@ -77,7 +77,7 @@ def add_host():
         "MountPoint": mount_point
     }
     save_hosts(hosts_data)
-    print("Host successfully added!")
+    print(">   Host successfully added!")
     list_hosts()
     
 def remove_host(host_name = None):
@@ -86,10 +86,10 @@ def remove_host(host_name = None):
     hosts_data = read_hosts()
     
     if host_name is None:
-        print("Host name: ", end="")
+        print(">   Host name: ", end="")
         host_name = input()
     if host_name not in hosts_data:
-        print("Host not present! Nothing removed!")
+        print(">   Host not present! Nothing removed!")
         return
     
     del hosts_data[host_name]
@@ -101,28 +101,28 @@ def edit_host(host_name = None):
     '''
     hosts_data = read_hosts()
     if host_name is None:
-        print("Host name: ", end="")
+        print(">   Host name: ", end="")
         host_name = input()
     if host_name not in hosts_data:
-        print("Host not present!")
+        print(">   Host not present!")
         return
     
-    print("Address: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["HostAddress"]), end="")
+    print(">   Address: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["HostAddress"]), end="")
     new_address = input()
     if new_address:
         hosts_data[host_name]["HostAddress"] = new_address
         
-    print("User: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["User"]), end="")
+    print(">   User: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["User"]), end="")
     new_user = input()
     if new_user:
         hosts_data[host_name]["User"] = new_user
         
-    print("Remote path: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["RemotePath"]), end="")
+    print(">   Remote path: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["RemotePath"]), end="")
     new_remote_path = input()
     if new_remote_path:
         hosts_data[host_name]["RemotePath"] = new_remote_path
         
-    print("Mount point: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["MountPoint"]), end="")
+    print(">   Mount point: {0}. Leave blank to not alter: ".format(hosts_data[host_name]["MountPoint"]), end="")
     new_mount_point = input()
     if new_mount_point:
         hosts_data[host_name]["MountPoint"] = new_mount_point
@@ -135,13 +135,13 @@ def mount_host(host_name = None):
     '''
     hosts_data = read_hosts()
     if not hosts_data:
-        print("There are no hosts!")
+        print(">   There are no hosts!")
         return
     if host_name is None:
-        print("Host name:", end="")
+        print(">   Host name:", end="")
         host_name = input()
     if host_name not in hosts_data:
-        print("Host not found!")
+        print(">   Host not found!")
         return
     
     cmmd = "mkdir -p " + hosts_data[host_name]["MountPoint"]
@@ -161,22 +161,22 @@ def mount_host(host_name = None):
     if not mount_success:
         cmmd = "rm -r " + hosts_data[host_name]["MountPoint"]
         os.system(cmmd)
-        print("Failed to mount", host_name)
+        print(">   Failed to mount", host_name)
     else:
-        print("{0} successfully mounted!".format(host_name))
+        print(">   {0} successfully mounted!".format(host_name))
     
 def umount_host(host_name = None):
     '''
     '''
     hosts_data = read_hosts()
     if not hosts_data:
-        print("There are no hosts!")
+        print(">   There are no hosts!")
         return
     if host_name is None:
-        print("Host name:", end="")
+        print(">   Host name:", end="")
         host_name = input()
     if host_name not in hosts_data:
-        print("Host not found!")
+        print(">   Host not found!")
         return
     
     tries = 0
@@ -191,9 +191,9 @@ def umount_host(host_name = None):
     if umount_success:
         cmmd = "rm -rf " + hosts_data[host_name]["MountPoint"]
         os.system(cmmd)
-        print("{0} successfully unmounted!".format(host_name))
+        print(">   {0} successfully unmounted!".format(host_name))
     else:
-        print("failed to unmount {0}!".format(host_name))
+        print(">   Failed to unmount {0}!".format(host_name))
     
 if __name__ == "__main__":
     actions = {
