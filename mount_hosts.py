@@ -194,6 +194,17 @@ def umount_host(host_name = None):
         print(">   {0} successfully unmounted!".format(host_name))
     else:
         print(">   Failed to unmount {0}!".format(host_name))
+
+def config_env():
+    '''
+    '''
+    cmmd = "echo \"alias rmnt=\\\"python {0}/mount_servers.py\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    os.system(cmmd)
+    cmmd = "echo \"alias montar=\\\"python {0}/mount_servers.py montar\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    os.system(cmmd)
+    cmmd = "echo \"alias desmontar=\\\"python {0}/mount_servers.py desmontar\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    os.system(cmmd)
+
     
 if __name__ == "__main__":
     actions = {
@@ -202,7 +213,8 @@ if __name__ == "__main__":
         "remove_host": remove_host,
         "edit_host": edit_host,
         "mount": mount_host,
-        "umount": umount_host
+        "umount": umount_host,
+        "config": config_env
     }
     
     action_names = {
@@ -217,7 +229,8 @@ if __name__ == "__main__":
         "--mount": "mount",
         "-m": "mount",
         "--umount": "umount",
-        "-u": "umount"
+        "-u": "umount",
+        "--config": "config"
     }
 
     parser = argparse.ArgumentParser(description="Mount hosts via sshfs and fuse as remote file systems")
@@ -257,13 +270,17 @@ if __name__ == "__main__":
                             default="None",
                             type=str, 
                             help="Unmount the selected host")
+    mutex_grp1.add_argument("--config", 
+                            action = "store_const",
+                            const="config",
+                            help="Configures the bashrc file")
     args = vars(parser.parse_args())
     arg = sys.argv[1] if len(sys.argv) > 1 else None
     if arg is not None:
         action_name = action_names[arg]
         action_val = args[action_name]
         
-    if action_name == "list_hosts" or action_name == "add_host":
+    if action_name == "list_hosts" or action_name == "add_host" or action_name == "config":
         actions[action_name]()
     else:
         actions[action_name](action_val)
