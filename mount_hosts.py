@@ -198,11 +198,11 @@ def umount_host(host_name = None):
 def config_env():
     '''
     '''
-    cmmd = "echo \"alias rmnt=\\\"python {0}/mount_servers.py\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    cmmd = "echo \"alias rmnt=\\\"python {0}/mount_hosts.py\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
     os.system(cmmd)
-    cmmd = "echo \"alias montar=\\\"python {0}/mount_servers.py montar\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    cmmd = "echo \"alias montar=\\\"python {0}/mount_hosts.py -m\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
     os.system(cmmd)
-    cmmd = "echo \"alias desmontar=\\\"python {0}/mount_servers.py desmontar\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
+    cmmd = "echo \"alias desmontar=\\\"python {0}/mount_hosts.py -u\\\"\" >> ~/.bashrc".format(os.path.realpath("."))
     os.system(cmmd)
 
     
