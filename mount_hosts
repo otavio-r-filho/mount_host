@@ -1,9 +1,9 @@
+#!python
 import os
 import argparse
 import json
 import sys
 import time
-import re
 
 def read_hosts():
     '''
@@ -196,39 +196,6 @@ def umount_host(host_name = None):
     else:
         print(">   Failed to unmount {0}!".format(host_name))
 
-def config_env():
-    '''
-    '''
-
-    # Getting environment python
-    python_path = "#!" + sys.executable + "\n"
-
-    # Creating destination path
-    dest_path = os.path.join(os.environ["HOME"],".local/bin")
-    os.makedirs(dest_path, exist_ok=True)
-    dest_path = os.path.join(dest_path, "mount_hosts")
-
-    # Creating installation files
-    origin_file = open("mount_hosts")
-    origin_file_lines = origin_file.readlines()
-    origin_file.close()
-    origin_file_lines[0] = python_path
-    dest_file = open(dest_path, 'w')
-    dest_file.writelines(origin_file_lines)
-    dest_file.close()
-
-    # Making the program executable
-    os.chmod(dest_path, 0o750)
-
-    # Configuring bashrc
-    cmmd = "echo \"alias rmnt=\\\"{0}\\\"\" >> ~/.bashrc".format(dest_path)
-    os.system(cmmd)
-    cmmd = "echo \"alias montar=\\\"{0} -m\\\"\" >> ~/.bashrc".format(dest_path)
-    os.system(cmmd)
-    cmmd = "echo \"alias desmontar=\\\"{0} -u\\\"\" >> ~/.bashrc".format(dest_path)
-    os.system(cmmd)
-
-    
 if __name__ == "__main__":
     actions = {
         "list_hosts": list_hosts,
@@ -237,7 +204,6 @@ if __name__ == "__main__":
         "edit_host": edit_host,
         "mount": mount_host,
         "umount": umount_host,
-        "config": config_env
     }
     
     action_names = {
@@ -252,8 +218,7 @@ if __name__ == "__main__":
         "--mount": "mount",
         "-m": "mount",
         "--umount": "umount",
-        "-u": "umount",
-        "--config": "config"
+        "-u": "umount"
     }
 
     parser = argparse.ArgumentParser(description="Mount hosts via sshfs and fuse as remote file systems")
@@ -293,17 +258,13 @@ if __name__ == "__main__":
                             default="None",
                             type=str, 
                             help="Unmount the selected host")
-    mutex_grp1.add_argument("--config", 
-                            action = "store_const",
-                            const="config",
-                            help="Configures the bashrc file")
     args = vars(parser.parse_args())
     arg = sys.argv[1] if len(sys.argv) > 1 else None
     if arg is not None:
         action_name = action_names[arg]
         action_val = args[action_name]
         
-    if action_name == "list_hosts" or action_name == "add_host" or action_name == "config":
+    if action_name == "list_hosts" or action_name == "add_host":
         actions[action_name]()
     else:
         actions[action_name](action_val)
